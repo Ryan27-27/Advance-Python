@@ -37,3 +37,25 @@ def handle_client(client_socket):
 
 if __name__ == '__main__':
     main()
+
+
+
+'--------------------------------------------------------------------------------------'
+"Theory"
+'''The listening socket stays open, continuing to accept new connections.
+Each new connection gets its own socket so that:
+
+Data doesn't get mixed up between clients.
+You can spawn a new thread for each one and handle them independently.'''
+
+# The first socket (server) is for listening only.
+
+# Every time accept() runs, a new socket is created for communication with one client.
+
+# This design allows the server to:
+
+# Handle multiple clients at once
+
+# Avoid conflicts in communication
+
+# Scale better
