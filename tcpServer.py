@@ -10,7 +10,7 @@ def main():
     server.listen(6)
     print(f'[*] Listening on {ip}:{port}')
 
-    while True:
+    while True: #Accepts connection in loop
         client,address=server.accept() #accept() waits for a client to connect.
         print(f'[*] Accepted connection from {address[0]}:{address[1]}')
         client_handler=threading.Thread(target=handle_client,args=(client,))
