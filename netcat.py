@@ -5,6 +5,7 @@ import subprocess
 import sys
 import textwrap
 import threading
+import os
 
 def execute(cmd):
     cmd=cmd.strip()
@@ -55,7 +56,7 @@ class NetCat:
         self.socket.bind((self.args.target,self.args.port))
         self.socket.listen(5)
         while True:
-            client_socket,_=self.socket.acccept()
+            client_socket,_=self.socket.accept()
             client_thread=threading.Thread(target=self.handle,args=(client_socket,))
             client_thread.start()
 
@@ -84,9 +85,25 @@ class NetCat:
             while True:
                 try:
                     client_socket.send(b' $> ')
-                    while '\n' not in cmd_buffer.decode():
-                        cmd_buffer+=client_socket.recv(64)
-                    response=execute(cmd_buffer.decode())
+                    # while '\n' not in cmd_buffer.decode():
+                    #     cmd_buffer+=client_socket.recv(64)
+                    # response=execute(cmd_buffer.decode())
+                    while b'\n' not in cmd_buffer:
+                        data = client_socket.recv(64)
+                        if not data:
+                            return  # connection closed
+                        cmd_buffer += data
+
+                    command = cmd_buffer.decode().strip()
+
+                    # ✅ Handle exit/quit commands
+                    if command in ['exit', 'quit']:
+                        client_socket.send(b'Session closed.\n')
+                        client_socket.close()
+                        print("[*] Client requested session close.")
+                        os._exit(0)
+                        # return  # Don't call sys.exit() here, just return to end thread
+                    response=execute(command)
                     if response:
                         client_socket.send(response.encode())
                     cmd_buffer=b''
@@ -110,7 +127,8 @@ if __name__=='__main__':
     parser.add_argument('-c','--command',action='store_true',help='command shell')
     parser.add_argument('-e','--execute',help='execute specified command')
     parser.add_argument('-l','--listen',action='store_true',help='listen')
-    parser.add_argument('-p','--port',type=int,default='192.168.1.203',help='specifed IP')
+    parser.add_argument('-t','--target',default='192.168.1.203',help='specifed IP')
+    parser.add_argument('-p','--port',type=int,default=5555,help='specifed IP')
     parser.add_argument('-u','--upload',help='upload file')
     args=parser.parse_args()
 
@@ -139,6 +157,11 @@ import subprocess        # For executing system commands
 import sys               # For system-specific functions
 import textwrap          # For formatting help text
 import threading         # For handling multiple clients simultaneously'''
+
+''' 
+Warning: os._exit(0) is not graceful; it stops all running threads immediately.
+Use it only if you want to kill the whole script instantly when exit is typed.
+'''
 
 
 
