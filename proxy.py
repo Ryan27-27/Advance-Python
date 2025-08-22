@@ -33,31 +33,22 @@ def hexdump(src, length=16, show=True):
     else:
         return results
     
-# def receive_from(connection):
-#     buffer= b""
-#     connection.settimeout(2)
-#     try:
-#         while True:
-#             data=connection.recv(4096)
-#             if not data:
-#                 break
-#             buffer+=data
-#     except Exception as e:
-#         print('error ',e)
-#         pass
-#     return buffer
-
-def receive_from(connection, timeout=2):
-    buffer = b""
-    connection.settimeout(timeout)
+def receive_from(connection):
+    buffer= b""
+    connection.settimeout(0)
     try:
-        data = connection.recv(4096)
-        buffer += data
-    except:
+        while True:
+            data=connection.recv(4096)
+            if not data:
+                break
+            buffer+=data
+    except Exception as e:
+        # print('error ',e)
         pass
     return buffer
 
-def request_heandler(buffer):
+
+def request_handler(buffer):
     # perform packet modification
     return buffer
 
@@ -90,7 +81,7 @@ def proxy_handler(client_socket,remote_host,remote_port,receive_first):
                 except:
                    pass
                 hexdump(local_buffer)
-                local_buffer=request_heandler(local_buffer)
+                local_buffer=request_handler(local_buffer)
                 remote_socket.send(local_buffer)
                 print("[===>] Sent to remote.")
             remote_buffer=receive_from(remote_socket)
@@ -106,11 +97,14 @@ def proxy_handler(client_socket,remote_host,remote_port,receive_first):
                 remote_buffer=response_handler(remote_buffer)
                 client_socket.send(remote_buffer)
                 print("[==>] Sent to local.")
+
                 if not len(local_buffer) or not len(remote_buffer):
                     client_socket.close()
                     remote_socket.close()
                     print("[*] No more data. Closing connection.")
                     break
+        #    This code causes connection loss after the settimeout as the error starts 
+
 def server_loop(local_host, local_port, remote_host, remote_port,receive_first):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
