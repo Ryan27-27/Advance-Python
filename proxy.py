@@ -1,6 +1,7 @@
 import sys
 import socket
 import threading
+import time
 
 HEX_FILTER=''.join([(len(repr(chr(1)))==3) and chr(i) or '.' for i in range(256)])
 
@@ -72,9 +73,12 @@ def proxy_handler(client_socket,remote_host,remote_port,receive_first):
             remote_buffer=response_handler(remote_buffer)
             client_socket.send(remote_buffer)
             print('[===>] Sent to local.')
+
+    last_activity = time.time()
     while True:
             local_buffer= receive_from(client_socket)
             if len(local_buffer):
+                last_activity = time.time() 
                 print("[<===] Received %d bytes from local." % len(local_buffer))
                 try:
                    print(local_buffer.decode(errors="ignore"))
@@ -86,6 +90,7 @@ def proxy_handler(client_socket,remote_host,remote_port,receive_first):
                 print("[===>] Sent to remote.")
             remote_buffer=receive_from(remote_socket)
             if len(remote_buffer):
+                last_activity = time.time() 
                 print("[<===] Received %d bytes from remote." % len(remote_buffer))
 
                 try:
@@ -98,11 +103,12 @@ def proxy_handler(client_socket,remote_host,remote_port,receive_first):
                 client_socket.send(remote_buffer)
                 print("[==>] Sent to local.")
 
-                if not len(local_buffer) or not len(remote_buffer):
-                    client_socket.close()
-                    remote_socket.close()
-                    print("[*] No more data. Closing connection.")
-                    break
+            if (not len(local_buffer) or not len(remote_buffer)) and (time.time() - last_activity > 10):
+                print(time.time())
+                client_socket.close()
+                remote_socket.close()
+                print("[*] No more data. Closing connection.")
+                break
         #    This code causes connection loss after the settimeout as the error starts 
 
 def server_loop(local_host, local_port, remote_host, remote_port,receive_first):
