@@ -62,7 +62,7 @@ Are you sure you want to continue connecting (yes/no)?
 If you type yes, the host key gets saved to ~/.ssh/known_hosts.
 Next time you connect, SSH compares the server's key with the saved one.
 
-If it matches ✅ → connect.
+If it matches→ connect.
 If it doesn't ❌ → you get a WARNING: POSSIBLE DNS SPOOFING / MITM ATTACK.
 This is how OpenSSH protects you.
 '''
@@ -91,6 +91,13 @@ ftps used TLS/SSL certifications for encryption.
 scp and sftp are different
 SCP = quick & simple → "just copy this file."
 SFTP = powerful & flexible → "manage files like FTP but securely
+
+Paramiko = Python library for SSH2
+   SSH remote login
+   Run commands on remote machines
+   Secure file transfer (SFTP)
+   Port forwarding / tunneling
+   Automating server management
 
 for more details read :
 https://chatgpt.com/share/68ab0481-4924-8012-b025-66d983951340
