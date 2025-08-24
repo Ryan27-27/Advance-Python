@@ -45,3 +45,39 @@ if __name__ == "__main__":
 3.Hiding input (passwords, API keys, secrets) → getpass()
   Getting the current system username safely → getuser()    
 '''
+
+'''
+When you run:
+ssh user@ipaddress
+
+Your SSH client checks the server's host key against the ~/.ssh/known_hosts file.
+If this is the first time connecting, there's no record of the host key yet.
+
+SSH then prompts you:
+
+The authenticity of host 'ipaddress (x.x.x.x)' can't be established.
+RSA key fingerprint is SHA256:abcdefg...
+Are you sure you want to continue connecting (yes/no)?
+
+If you type yes, the host key gets saved to ~/.ssh/known_hosts.
+Next time you connect, SSH compares the server's key with the saved one.
+
+If it matches ✅ → connect.
+If it doesn't ❌ → you get a WARNING: POSSIBLE DNS SPOOFING / MITM ATTACK.
+This is how OpenSSH protects you.
+'''
+
+'''
+Meaning of set_missing_host_key_policy
+It tells Paramiko what to do if the server's host key is not in the known_hosts file.
+
+paramiko.AutoAddPolicy() means:
+“Automatically trust the host key and add it to the known hosts (without asking).”
+So it's like saying “yes” automatically when SSH asks “Do you trust this server?”.
+
+Security Note:
+AutoAddPolicy is convenient for testing/learning (like your Bandit labs).
+But in real secure environments, it's risky because it means you blindly trust any server you connect to.
+Safer option: use RejectPolicy (default) or manually load known host keys.
+
+'''
