@@ -1,18 +1,20 @@
 import paramiko
+import getpass
 
 def ssh_command(ip,port,user,passwd,cmd):
    client=paramiko.SSHClient()
    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
    client.connect(ip,port=port,username=user,password=passwd)
-   _, stdout, stderr=client.exec_command(cmd)
+   _, stdout, stderr=client.exec_command(cmd) # NON-INTERACTIVE only one command
    output=stdout.readlines() + stderr.readlines()
    if output:
       print("-----Output-----")
+      print(f'Welcome User {getpass.getuser()}')
       for line in output:
          print(line.strip())
 
 if __name__ == "__main__":
-   import getpass
+   
    user=input('Username: ') or 'bandit0'
    password=getpass.getpass("Password: ")
    ip=input('Enter server IP: ') or 'bandit.labs.overthewire.org'
