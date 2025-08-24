@@ -81,3 +81,17 @@ But in real secure environments, it's risky because it means you blindly trust a
 Safer option: use RejectPolicy (default) or manually load known host keys.
 
 '''
+
+'''
+SFTP and FTPS are different.
+both are file transfer protocol and secured/encrypted.
+one uses ssh connection for more robust and uses file management run inside ssh connection.
+ftps used TLS/SSL certifications for encryption.
+
+scp and sftp are different
+SCP = quick & simple → "just copy this file."
+SFTP = powerful & flexible → "manage files like FTP but securely
+
+for more details read :
+https://chatgpt.com/share/68ab0481-4924-8012-b025-66d983951340
+'''
